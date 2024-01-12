@@ -1,0 +1,1 @@
+web: gunicorn my_cakes_club.wsgi
