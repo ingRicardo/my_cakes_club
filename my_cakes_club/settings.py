@@ -158,7 +158,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:9000",
     "http://localhost:4200",
-    "https://web-production-b7404.up.railway.app"
+    "https://web-production-b7404.up.railway.app",
+    "web-production-b7404.up.railway.app"
 ]
 
 ANYMAIL = {
