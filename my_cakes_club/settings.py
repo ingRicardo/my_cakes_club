@@ -28,7 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
                 "web-production-b7404.up.railway.app",
-                "127.0.0.1"
+                "127.0.0.1",
+                "https://circle-cakes-app.web.app",
+                "circle-cakes-app.web.app"
                 ]
 
 
@@ -161,7 +163,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:9000",
     "http://localhost:4200",
-    "https://web-production-b7404.up.railway.app"
+    "https://web-production-b7404.up.railway.app",
+    "https://circle-cakes-app.web.app"
 ]
 
 ANYMAIL = {
