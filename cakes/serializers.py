@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cake, CakeFinalJson, CakeComment
+from .models import Cake, CakeFinalJson, CakeComment, CakesDataJson
 
 # Create a model serializer
 class CakesSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,3 +18,8 @@ class CakesCommentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CakeComment
         fields = ('name', 'comment')
+
+class CakesDataJsonSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = CakesDataJson
+        fields =('jsoncakesdata', 'created_at')

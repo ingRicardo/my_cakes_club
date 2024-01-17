@@ -14,10 +14,13 @@ router.register(r'cakes', CakesViewSet)
 router.register(r'cakesjson', CakesJsonViewSet)
 router.register(r'cakescomments', CakesCommentViewSet)
 
+router.register(r'cakesdatajson', CakesDataJsonViewSet)
+
 urlpatterns = [
     path('', include(router.urls)),
     path('cakes/', views.cakes, name='cakes'),
     path('cakesjson/', views.cakesJson, name='cakesjson'),
+    path('cakesdatajson/', views.cakesdataJson, name='cakesdatajson'),
     path('api-cakes/', include('rest_framework.urls')),
     path('postjsoncake/',views.postJsonCake),
     path('cakescomments/',views.cakesComment, name='cakescomments'),

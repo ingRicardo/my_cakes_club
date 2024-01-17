@@ -21,3 +21,7 @@ class CakeFinalJson(models.Model):
 class CakeComment(models.Model):
    name = models.CharField(max_length=255)
    comment = models.CharField(max_length=255)
+
+class CakesDataJson(models.Model):
+    jsoncakesdata = models.JSONField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -2,11 +2,11 @@
 
 from django.http import HttpResponse
 from django.template import loader
-from .models import Cake, CakeFinalJson, CakeComment
+from .models import Cake, CakeFinalJson, CakeComment, CakesDataJson
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework  import  viewsets
-from  .serializers import CakesSerializer, CakesJsonSerializer, CakesCommentSerializer
+from  .serializers import CakesSerializer, CakesJsonSerializer, CakesCommentSerializer, CakesDataJsonSerializer
 from django.core.mail import EmailMultiAlternatives, send_mail
 import json
 from django.conf import settings
@@ -77,6 +77,21 @@ class CakesJsonViewSet(viewsets.ModelViewSet):
  
     # specify serializer to be used
     serializer_class = CakesJsonSerializer
+
+def cakesdataJson(request):
+  mycakesdatajson= CakesDataJson.objects.all().values()
+  template = loader.get_template('all_cakesdatajson.html')
+  context = {
+    'mycakesdatajson' : mycakesdatajson,
+  }
+  return HttpResponse(template.render(context, request))
+
+class CakesDataJsonViewSet(viewsets.ModelViewSet):
+    # define queryset
+    queryset = CakesDataJson.objects.all()
+ 
+    # specify serializer to be used
+    serializer_class = CakesDataJsonSerializer
 
 @api_view(['POST'])
 def postJsonCake(request):
