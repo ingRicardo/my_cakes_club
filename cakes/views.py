@@ -11,6 +11,18 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 import json
 from django.conf import settings
 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from scipy.stats import norm
+from django_matplotlib.fields import plt
+import warnings
+warnings.filterwarnings("ignore")
+
+
+
+
 #def send_mail_func(request):
 #  myemail= send_mail("New Order!", "Hey buddy, you have a new order",
 #  "sender-email@gmail.com", ["reciever-email@gmail.com"])
@@ -25,6 +37,35 @@ from django.conf import settings
 #    send_mail("New Order!", "Hey buddy, you have a new order",
 #          "sender-email@gmail.com", ["reciever-email@gmail.com"])
 #    return HttpResponse("Email Sent")
+
+
+URL = 'https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/0e7a9b0a5d22642a06d3d5b9bcbad9890c8ee534/iris.csv'
+
+df = pd.read_csv(URL)
+df.head()
+df_ = df.drop(columns=['species']).copy()
+
+
+
+def LifModelFunc(self):
+
+  df_.plot.hist(alpha=0.4, figsize=(20, 8))
+  plt.legend(title = "Dataset cilumns:" ,bbox_to_anchor = (1.0, 0.6), loc = 'upper left')
+  plt.title('Iris dataset', fontsize = 20)
+  plt.xlabel('Input value', fontsize = 15)
+  plt.show()
+ 
+
+  return HttpResponse( 'LIF MODEL')
+
+def callNeuralNets(request):
+  mymember = "this is the context"
+  template = loader.get_template('lifmodel.html')
+  context = {
+    'cakescomymembermment' : mymember,
+    }
+  return HttpResponse(template.render(context, request))
+
 
 
 def send_welcome_email(jsondata, email):
@@ -127,3 +168,7 @@ def postCommentCake(request):
     if serializer.is_valid():
         serializer.save()
     return Response(serializer.data)
+
+
+
+

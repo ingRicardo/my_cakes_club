@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'cakes',
-    'anymail'
+    'anymail',
+    'django_matplotlib'
 ]
 
 MIDDLEWARE = [

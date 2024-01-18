@@ -26,6 +26,8 @@ urlpatterns = [
     path('cakescomments/',views.cakesComment, name='cakescomments'),
     path('postcommentcake/',views.postCommentCake),
 
-   path('email/', views.send_welcome_email, name='send_welcome_email')
-
+   path('email/', views.send_welcome_email, name='send_welcome_email'),
+   
+   path('neuralnets/', views.callNeuralNets),
+   path('neuralnets/lifmodel/', views.LifModelFunc , name="lifmodel")
 ]
