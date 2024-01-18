@@ -29,5 +29,9 @@ urlpatterns = [
    path('email/', views.send_welcome_email, name='send_welcome_email'),
    
    path('neuralnets/', views.callNeuralNets),
-   path('neuralnets/lifmodel/', views.LifModelFunc , name="lifmodel")
+   path('neuralnets/lifmodel/', views.LifModelFunc , name="lifmodel"),
+
+   path('lifsnn/', views.showDataset),
+   path('lifsnn/receptivefields/', views.receptiveFields),
+   
 ]

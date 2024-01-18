@@ -252,6 +252,103 @@ def LifModelFunc(self):
 
   return HttpResponse( 'LIF MODEL')
 
+
+def showDataset(request):
+  df_.plot.hist(alpha=0.4, figsize=(20, 8))
+  plt.legend(title = "Dataset cilumns:" ,bbox_to_anchor = (1.0, 0.6), loc = 'upper left')
+  plt.title('Iris dataset', fontsize = 20)
+  plt.xlabel('Input value', fontsize = 15)
+
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri =  urllib.parse.quote(string)
+  return render(request,'lifmodeldataset.html',{'data':uri})
+
+def receptiveFields(request):
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  fig, (ax1, ax2, ax3, ax4) = plt.subplots(4)
+
+  fig.set_figheight(8)
+  fig.set_figwidth(10)
+
+  k = 0
+
+  for ax in [ax1, ax2, ax3, ax4]:
+
+      ax.set(ylabel = f'{df_.columns[k]} \n\n Excitation of Neuron')
+
+      for i in range(len(d[0][k])):
+
+          ax.plot(d[1][k], d[0][k][i], label = i + 1)
+
+      k+=1
+
+  plt.legend(title = "Presynaptic neuron number \n      in each input column" ,bbox_to_anchor = (1.05, 3.25), loc = 'upper left')
+  plt.suptitle(' \n\n  Gaussian receptive fields for Iris dataset', fontsize = 15)
+  ax.set_xlabel(' Presynaptic neurons and\n input range of value feature', fontsize = 12, labelpad = 15)
+
+  #plt.show()
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri =  urllib.parse.quote(string)
+  fig = plt.gcf()
+
+
+  x_input = 5
+  fig, ax = plt.subplots(1)
+
+  fig.set_figheight(5)
+  fig.set_figwidth(15)
+
+  ax.set(ylabel = df_.columns[1])
+
+  for i in range(len(d[0][1])):
+      ax.plot(d[1][1], d[0][1][i])
+
+  for n in range(x_input):
+
+      plt.plot(np.tile(df_['sepal_width'][n], (10,1)), 
+          d[0][1][np.tile(d[1][1] == df_['sepal_width'][n], (10,1))], 'ro', markersize=4)
+
+      plt.vlines(x = df_['sepal_width'][n], ymin = - 0.1, ymax = 1.1, 
+                colors = 'purple', ls = '--', lw = 1, label = df_['sepal_width'][n])
+
+      plt.text(df_['sepal_width'][n] * 0.997, 1.12, n + 1, size = 10)
+
+
+  plt.legend(title = "First five input:", bbox_to_anchor = (1.0, 0.7), loc = 'upper left')
+
+  plt.suptitle('Gaussian receptive fields for Iris dataset. \n \
+                  A detailed description of the idea using the example of the first five value "sepal_width"',
+              fontsize = 15)
+
+  ax.set_xlabel('Input value X ∈ [x_min, x_max] of column', fontsize = 12, labelpad = 15)
+  ax.set_ylabel('Excitation of a Neuron ∈ [0,1]', fontsize = 12, labelpad = 15)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri3 =  urllib.parse.quote(string)
+
+
+  return render(request,'fields.html',{'data':uri ,'data3':uri3})
+
+
 def callNeuralNets(request):
   ''' mymember = "this is the context"
   template = loader.get_template('lifmodel.html')
@@ -273,10 +370,6 @@ def callNeuralNets(request):
   buf.seek(0)
   string = base64.b64encode(buf.read())
   uri =  urllib.parse.quote(string)
-
-
-
-
 
   sigm = [0.1, 0.1, 0.2, 0.1]
   d = Gaus_neuron(df_, 10, 0.001, sigm)
@@ -501,24 +594,6 @@ def callNeuralNets(request):
   buf.seek(0)
   string = base64.b64encode(buf.read())
   uri7 =  urllib.parse.quote(string)
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
   spike_time = res[2]
