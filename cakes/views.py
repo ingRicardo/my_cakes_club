@@ -348,6 +348,53 @@ def receptiveFields(request):
 
   return render(request,'fields.html',{'data':uri ,'data3':uri3})
 
+def latancy(request):
+  
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  x_input = 5
+
+  np.set_printoptions(formatter={'float_kind':'{:f}'.format})
+  five_x = np.zeros((5, 10))
+  
+  for n in range(x_input):
+      five_x[n,:] = d[0][1][np.tile(d[1][1] == df_['sepal_width'][n], (10,1))]
+
+  five_x
+
+
+  five_x = np.where(five_x > 0.1, 1 - five_x, np.nan)
+  five_x[five_x == 0] = 0.0001
+  five_x
+
+
+  fig, ax = plt.subplots(5, figsize=(12, 10), dpi = 100)
+
+  for i in range(5):
+      ax[i].scatter(x = five_x[i], y = np.arange(1, 10 + 1), s = 10, color = 'black')
+      ax[i].hlines(xmin = 0, xmax=1, y=np.arange(1, 11, 1), 
+                colors = 'purple', ls = '--', lw = 0.25)
+      ax[i].yaxis.set_ticks(np.arange(0, 11, 1))
+      ax[i].set_ylabel(f'x{i+1} = {df_.iloc[i,1]}\n (period {i+1}) \n\n № \npre-synaptic neuron')
+      ax[i].set_xlim(0, 1)
+      ax[i].set_ylim(0, 10 * 1.05)
+
+  ax[i].set_xlabel('Spike Latancy')
+  plt.suptitle(' \n\n Input after applying latancy coding \nusing the Gaussian receptive fields method', fontsize = 15)
+  #plt.show()
+
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri4 =  urllib.parse.quote(string)
+
+  return render(request,'latancy.html',{'data4':uri4})
+
 
 def callNeuralNets(request):
   ''' mymember = "this is the context"

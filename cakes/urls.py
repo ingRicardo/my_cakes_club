@@ -33,5 +33,5 @@ urlpatterns = [
 
    path('lifsnn/', views.showDataset),
    path('lifsnn/receptivefields/', views.receptiveFields),
-   
+   path('lifsnn/latancy/', views.latancy)
 ]
