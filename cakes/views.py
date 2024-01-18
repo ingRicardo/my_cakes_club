@@ -16,7 +16,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from scipy.stats import norm
-from django_matplotlib.fields import plt
 import warnings
 warnings.filterwarnings("ignore")
 
