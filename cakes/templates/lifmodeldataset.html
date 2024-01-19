@@ -7,7 +7,22 @@
 <body>
     <h1>Spiking Neural Networks</h1>
     <h2>Leaky and Integreate Fire Neuron - LIF Model</h2>
- 
+     <p>
+        The dataset contains three types of flowers: Setosa, Versicolor and Virginica. Each class contains 4 features: “Sepal Length”, “Sepal Width”, “Petal Length”, “Petal Width”. The goal of iris flower classification is to predict the flower types based on their specific features. We will encode the values of each feature using 10 presynaptic neurons, for a total of 40 neurons. In the output layer, we will have 3 postsynaptic neurons for each type of flower.    
+     </p>
+     <h3> how does it work?</h3>
+     <p>
+        Neurons are connected to each other by synapses with a certain weight, and tuning these weights is our main task, which we will solve below. The main essence of the model: presynaptic neurons (input information) generate spikes that stimulate postsynaptic neurons -> membrane potential (Vm) of postsynaptic neurins is rising -> postsynaptic neurons generate their spikes from this (output information). The postsynaptic neuron that fires first on a given input layer (period 10ms) is the predicted type of color that our impulse network.
+     </p>
+     <p>
+        Example of a one training/testing period corresponding to a set of input data (in the case of the Iris dataset — one of 150). The dependency of the membrane potential of post-synaptic neurons on the incoming spikes from pre-synaptic neurons in relation to their weights. If the membrane potential reaches a threshold value, the post-synaptic neuron fires a spike
+     </p>
+     <p>
+        The change in the postsynaptic neuron’s membrane potential depends on the timing of spikes from presynaptic neurons and the weight of the synapse between them. If there are no spikes coming from the presynaptic neurons, the postsynaptic neuron’s membrane potential tends towards the resting potential (in our case, this is 0). The spike itself is an elementary event in the universe of SNN.
+     </p>
+     <p>
+        When the membrane potential of postsynaptic neuron reaches a threshold value, the postsynaptic neuron fires a spike. All of this happens during each training and testing period, which we take to be 10ms — the training period being the time during which all active presynaptic neurons corresponding to the values of the four input data features generate their spikes (there are a total of 150 such periods in the dataset). The postsynaptic neuron can either generate a spike or not. The postsynaptic neuron that fires a spike before any of the other postsynaptic neurons is considered to have fired during that period, while the others have not. After generating a spike, the postsynaptic neuron’s potential falls back to the resting potential and does not change again until the end of the current training period (it cannot fire more than once on a single set of input data)
+     </p>
     <table>
         <tr>
             <td>
@@ -45,5 +60,5 @@
 
     <img src="data:image/png;base64,{{ data }}" alt="" >
 
-    
+    <p>Riky-Mac</p>
 </body>
