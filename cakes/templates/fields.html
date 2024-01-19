@@ -1,8 +1,14 @@
+{% load static %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'css/nn.css' %}">
+
 <title>Receptive Fields</title>
 <body>
+    <h1>Receptive Fields</h1>
+    <form action='/lifsnn' method='GET'>
+        <button class="btn btn-primary" type='submit'> Back</button>
+    </form>
+
     <img src="data:image/png;base64,{{ data }}" alt="" >
     <img src="data:image/png;base64,{{ data3 }}" alt="" >
-    <form action='/lifsnn' method='GET'>
-        <button type='submit'> Back</button>
-    </form>
 </body>
