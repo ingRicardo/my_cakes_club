@@ -33,5 +33,9 @@ urlpatterns = [
 
    path('lifsnn/', views.showDataset),
    path('lifsnn/receptivefields/', views.receptiveFields),
-   path('lifsnn/latancy/', views.latancy)
+   path('lifsnn/latancy/', views.latancy),
+   path('lifsnn/latancy2/', views.latancy2),
+   path('lifsnn/presynapneurons/', views.presynapneurons),
+   path('lifsnn/postsynapneurons/', views.postsynaptic),
+
 ]
