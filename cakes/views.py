@@ -580,10 +580,167 @@ def postsynaptic(request):
 
 
 
-
-
   return render(request,'postsynaptic.html',{'data7':uri7, 'data7':uri8, 'data9':uri9,'data10':uri10, 'data11':uri11, 'data12':uri12})
 
+def synapticspikes(request):
+  
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  fin = Lat_Spike(df_, d, 10)
+
+  Final_df = pd.DataFrame(fin)
+  Final_df
+
+  lat_ne = np.transpose(Final_df.values)
+  ind_type = np.array(([0, 50, 100], [50, 100, 0], [100, 0, 50]))
+
+  list_weight = np.zeros((3,40))
+
+  for ind in range(3):
+      
+      train_stack = model_data(ind, ind_type, lat_ne, 0, 20)
+      tr_ar = np.where(np.transpose(train_stack) > 0, 2 * (1 - np.transpose(train_stack)), 0)
+      tr_ar[:, 20:] = tr_ar[:, 20:] * (-1)
+      tr_ar = pd.DataFrame(tr_ar)
+      tr_ar[20] = tr_ar.iloc[:,:20].sum(axis = 1) + 0.1
+      tst_ar = np.float64(np.transpose(np.array(tr_ar.iloc[:,20:])))
+      
+      for i in range(1, len(tst_ar)):
+          
+          tst_ar[0][((np.round(tst_ar[0], 4) > 0.1) & (tst_ar[i] == 0))] += - np.float64(
+              np.sum(tst_ar[i][np.round(tst_ar[0], 4) > 0.1]) / len(tst_ar[0][((
+                  np.round(tst_ar[0], 4) > 0.1) & (tst_ar[i] == 0))]))
+          tst_ar[0][np.round(tst_ar[0], 4) > 0.1] += tst_ar[i][np.round(tst_ar[0], 4) > 0.1]
+          tst_ar[0][tst_ar[0] < 0.1] = 0.1
+          
+      list_weight[ind, :] = tst_ar[0]
+
+  list_weight
+
+
+
+
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+
+  accuracy_snn(spike_time, 20, 40, df, ind_type, 0)[2]
+
+  train_stack = model_data(0, ind_type, lat_ne, 20, 40)
+
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  t_post = res[1]
+  A_p = 0.8
+  A_m = A_p * 1.1
+
+  for n in range(3):
+      for u in range(20):
+          
+          t1 = np.round(train_stack[u + 10 * n] * 1000)
+          t2 = t1.copy()
+          
+          t2[((t1 <= t_post[n, u]) & (t1 > 0))] = A_p * np.exp((t1[((t1 <= t_post[n, u]) & (t1 > 0))] - t_post[n, u]) / 1000)
+          t2[((t1 > t_post[n, u]) & (t1 > 0))] = - A_m * np.exp((t_post[n, u] - t1[((t1 > t_post[n, u]) & (t1 > 0))]) / 1000)
+          
+          list_weight[n, :] += t2
+          
+  list_weight[list_weight < 0] = 0
+  list_weight
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+  spike_plot(spike_time, False, False, False)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri13 =  urllib.parse.quote(string)  
+
+
+  accuracy_snn(spike_time, 20, 40, df, ind_type, 0)[2]
+
+
+  train_stack = model_data(0, ind_type, lat_ne, 0, 40)
+  res = LIF_SNN(3, 120, train_stack, list_weight, 100)
+  v = res[0]
+
+  v_plot(v)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri14 =  urllib.parse.quote(string)  
+
+
+  res = LIF_SNN(3, 120, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+  spike_plot(spike_time, False, False, False)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri15 =  urllib.parse.quote(string)  
+
+  accuracy_snn(spike_time, 0, 40, df, ind_type, 0)[2]
+
+
+  train_stack = model_data(0, ind_type, lat_ne, 40, 50)
+  res = LIF_SNN(3, 30, train_stack, list_weight, 100)
+  v = res[0]
+  res = LIF_SNN(3, 30, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+
+  v_plot(v)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri16 =  urllib.parse.quote(string)  
+
+
+
+  spike_plot(spike_time, False, False, False)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri17 =  urllib.parse.quote(string)  
+
+
+  accuracy_snn(spike_time, 40, 50, df, ind_type, 0)[2]
+
+
+  spike_plot(spike_time, True, 27, 3)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri18 =  urllib.parse.quote(string)  
+
+
+
+
+  return render(request,'synapticspikes.html',{'data13':uri13, 'data14':uri14, 'data15':uri15, 'data16':uri16, 'data17':uri17, 'data18':uri18})
 
 
 def callNeuralNets(request):

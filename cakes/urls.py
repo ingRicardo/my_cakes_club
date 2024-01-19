@@ -37,5 +37,5 @@ urlpatterns = [
    path('lifsnn/latancy2/', views.latancy2),
    path('lifsnn/presynapneurons/', views.presynapneurons),
    path('lifsnn/postsynapneurons/', views.postsynaptic),
-
+   path('lifsnn/synapticspikes/', views.synapticspikes)
 ]
