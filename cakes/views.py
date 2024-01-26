@@ -1242,7 +1242,7 @@ def send_welcome_email(jsondata, email):
 
     subject = 'Your Order is here- Tu Orden esta aqui - Welcome to My Cakes Site'
    # message = "Your current data is : " +json.dumps(jsondata)  + "\n\n" +  "Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
-    message = "Hi "+name+ "\n\n your info is here/tu info esta aqui: " + ingreStr +"\n"+ type + "\n" + size + "\n"+ event +"\n"+ shape + "\n design/diseno: "+ designdraw + "\n text on the cake/texto en el pastel: "+ textcake+ "\n\n address/direccion: "+ address+ "\n\n notes/notas: "+ notes + "\n\n delivery date/fecha de entrega: "+deliverydate + "\n\n  your email: "+emailval+"\n\n  your cellphone/celular: "+cellphone+"\n\n\n Your workOrder is: "+workorder  +"\n\n\n For details call or whatsapp to/para mas detalles llamar a  Riky 6641268391"
+    message = "Hi "+name+ "\n\nyour info is here/tu info esta aqui!\n INGREDIENTS:\n" + ingreStr +"\n"+ type + "\n" + size + "\n"+ event +"\n"+ shape + "\nDESIGN/DISENO: "+ designdraw + "\nTEXT OVER THE CAKE/TEXTO EN EL PASTEL: "+ textcake+ "\nADDRESS/DIRECCION: "+ address+ "\nNOTES/NOTAS: "+ notes + "\nDELIVERY DATE/FECHA DE ENTREGA: "+deliverydate + "\n\nYOUR EMAIL: "+emailval+"\n\nYOUR CELLPHONE/CELULAR: "+cellphone+"\n\n\nYour workOrder is: "+workorder  +"\n\n\nFor details call or whatsapp to/para mas detalles llamar a  Riky 6641268391"
     from_email = 'ramo2884@gmail.com'
     recipient_list = [json.dumps(email),"ramo2884@gmail.com"]
     send_mail(subject, message, from_email, recipient_list)
