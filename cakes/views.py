@@ -1168,17 +1168,81 @@ def callNeuralNets(request):
                                          , 'data18': uri18})
 
 
+
+
+'''
+ {
+    "name": "Mac\u00edas P", 
+    "email": "maciasp05@gmail.com",
+   "ingredients": ["Vailla fresas"], 
+   "type": "Clasico",
+    "size": "mediano",
+    "event": "Navidad", 
+    "shape": "Doble Redondo",
+    "address": "Lomas lejos",
+    "designdraw": "Cl\u00e1sico con flores",
+    "textcake": "Feliz Navidad",
+    "notes": "Sin notas adiconales",
+    "deliverydate": "January 31, 2024-04:00 PM",
+    "cellphone": "6643753412",
+    "uniqueId": "6yal984n4"}
+
+'''
+
+
 def send_welcome_email(jsondata, email):
-    subject = 'Welcome to My Cakes Site'
-    workorder =""
+
+    workorder ="" 
+    name = ""
+    emailval = ""
+    ingredients =[]
+    type = ""
+    size = ""
+    event = ""
+    shape = ""
+    address = ""
+    designdraw = ""
+    textcake = ""
+    notes = ""
+    deliverydate = ""
+
     for key, value in jsondata.items():
       print(key, value)
       if (key == "uniqueId"):
           workorder = value
-    message = "Your current data is : " +json.dumps(jsondata)  + "\n\n" +  "Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
+      if (key == "name"):
+          name = value
+      if (key == "email"):
+          emailval = value
+      if (key == "ingredients"):
+          ingredients = value
+      if (key == "type"):
+          type = value
+      if (key == "size"):
+          size = value
+      if (key == "event"):
+          event = value  
+      if (key == "shape"):
+          shape = value  
+      if (key == "address"):
+          address = value  
+      if (key == "designdraw"):
+          designdraw = value  
+      if (key == "textcake"):
+          textcake = value  
+      if (key == "notes"):
+          notes = value  
+      if (key == "deliverydate"):
+          deliverydate = value  
+
+    subject = 'Your Order is here Welcome to My Cakes Site'
+   # message = "Your current data is : " +json.dumps(jsondata)  + "\n\n" +  "Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
+    message = "Hi "+name+ "\n your ingredients : " + ingredients +"\n type of cake: "+ type + "\n size of cake: " + size + "\n event: "+ event +"\n shape: "+ shape + "\n your address: "+ address+ "\n your design: "+ designdraw + "\n text on the cake: "+ textcake+ "\n notes: "+ notes + "\n delivery date: "+deliverydate + "\n your email: "+emailval+"\n\n Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
     from_email = 'ramo2884@gmail.com'
     recipient_list = [json.dumps(email),"ramo2884@gmail.com"]
     send_mail(subject, message, from_email, recipient_list)
+
+
     #return HttpResponse("Email Sent", request)
   #  return HttpResponse("Email Sent", request)
 
