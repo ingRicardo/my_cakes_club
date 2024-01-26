@@ -1195,7 +1195,7 @@ def send_welcome_email(jsondata, email):
     workorder ="" 
     name = ""
     emailval = ""
-    ingredients =[]
+   #ingredients =[]
     type = ""
     size = ""
     event = ""
@@ -1205,7 +1205,7 @@ def send_welcome_email(jsondata, email):
     textcake = ""
     notes = ""
     deliverydate = ""
-
+    ingreStr = ""
     for key, value in jsondata.items():
       print(key, value)
       if (key == "uniqueId"):
@@ -1215,7 +1215,9 @@ def send_welcome_email(jsondata, email):
       if (key == "email"):
           emailval = value
       if (key == "ingredients"):
-          ingredients = value
+          for x in value:
+            ingreStr= ingreStr + x + " "
+            print(ingreStr)
       if (key == "type"):
           type = value
       if (key == "size"):
@@ -1237,7 +1239,7 @@ def send_welcome_email(jsondata, email):
 
     subject = 'Your Order is here Welcome to My Cakes Site'
    # message = "Your current data is : " +json.dumps(jsondata)  + "\n\n" +  "Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
-    message = "Hi "+name+ "\n your ingredients : " + ingredients +"\n type of cake: "+ type + "\n size of cake: " + size + "\n event: "+ event +"\n shape: "+ shape + "\n your address: "+ address+ "\n your design: "+ designdraw + "\n text on the cake: "+ textcake+ "\n notes: "+ notes + "\n delivery date: "+deliverydate + "\n your email: "+emailval+"\n\n Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
+    message = "Hi "+name+ "\n your ingredients : " + ingreStr +"\n type of cake: "+ type + "\n size of cake: " + size + "\n event: "+ event +"\n shape: "+ shape + "\n your address: "+ address+ "\n your design: "+ designdraw + "\n text on the cake: "+ textcake+ "\n notes: "+ notes + "\n delivery date: "+deliverydate + "\n your email: "+emailval+"\n\n Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
     from_email = 'ramo2884@gmail.com'
     recipient_list = [json.dumps(email),"ramo2884@gmail.com"]
     send_mail(subject, message, from_email, recipient_list)
