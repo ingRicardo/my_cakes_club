@@ -1206,6 +1206,7 @@ def send_welcome_email(jsondata, email):
     notes = ""
     deliverydate = ""
     ingreStr = ""
+    cellphone = ""
     for key, value in jsondata.items():
       print(key, value)
       if (key == "uniqueId"):
@@ -1236,10 +1237,12 @@ def send_welcome_email(jsondata, email):
           notes = value  
       if (key == "deliverydate"):
           deliverydate = value  
+      if (key == "cellphone"):
+          cellphone = value  
 
-    subject = 'Your Order is here Welcome to My Cakes Site'
+    subject = 'Your Order is here- Tu Orden esta aqui - Welcome to My Cakes Site'
    # message = "Your current data is : " +json.dumps(jsondata)  + "\n\n" +  "Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
-    message = "Hi "+name+ "\n your ingredients : " + ingreStr +"\n type of cake: "+ type + "\n size of cake: " + size + "\n event: "+ event +"\n shape: "+ shape + "\n your address: "+ address+ "\n your design: "+ designdraw + "\n text on the cake: "+ textcake+ "\n notes: "+ notes + "\n delivery date: "+deliverydate + "\n your email: "+emailval+"\n\n Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to Riky 6641268391"
+    message = "Hi "+name+ "\n your ingredients/ingredientes: " + ingreStr +"\n type of cake/tipo de pastel: "+ type + "\n size of cake/tamano de pastel: " + size + "\n event/evento: "+ event +"\n shape/forma: "+ shape + "\n your address/direccion: "+ address+ "\n your design/diseno: "+ designdraw + "\n text on the cake/texto en el pastel: "+ textcake+ "\n notes/notas: "+ notes + "\n delivery date/fecha de entrega: "+deliverydate + "\n your email: "+emailval+"\n your cellphone/celular: "+cellphone+"\n\n Your workOrder is: "+workorder  +"\n\n For details call or whatsapp to/para mas detalles llamar a  Riky 6641268391"
     from_email = 'ramo2884@gmail.com'
     recipient_list = [json.dumps(email),"ramo2884@gmail.com"]
     send_mail(subject, message, from_email, recipient_list)
