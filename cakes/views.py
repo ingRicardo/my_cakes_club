@@ -2,7 +2,7 @@
 
 import base64
 import io
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import loader
 import urllib3
@@ -255,6 +255,8 @@ def LifModelFunc(self):
 
 def showDataset(request):
   df_.plot.hist(alpha=0.4, figsize=(20, 8))
+
+
   plt.legend(title = "Dataset cilumns:" ,bbox_to_anchor = (1.0, 0.6), loc = 'upper left')
   plt.title('Iris dataset', fontsize = 20)
   plt.xlabel('Input value', fontsize = 15)
@@ -268,6 +270,15 @@ def showDataset(request):
   string = base64.b64encode(buf.read())
   uri =  urllib.parse.quote(string)
   return render(request,'lifmodeldataset.html',{'data':uri})
+
+def getIrisDataset(request):
+  
+  irisjson = df_.to_json()
+  print(' ---> ', irisjson )
+
+  return HttpResponse(irisjson,  content_type='application/json')
+  #return JsonResponse(irisjson,safe=False)
+
 
 def receptiveFields(request):
   sigm = [0.1, 0.1, 0.2, 0.1]
