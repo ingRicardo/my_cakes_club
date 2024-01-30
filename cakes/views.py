@@ -18,6 +18,7 @@ from django.conf import settings
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+#plt.use('Agg')
 from scipy.stats import norm
 import warnings
 warnings.filterwarnings("ignore")
@@ -25,7 +26,7 @@ warnings.filterwarnings("ignore")
 
 #from django_matplotlib.fields import plt
 import urllib.parse
-
+import array as arr
 
 
 #def send_mail_func(request):
@@ -278,6 +279,86 @@ def getIrisDataset(request):
 
   return HttpResponse(irisjson,  content_type='application/json')
   #return JsonResponse(irisjson,safe=False)
+
+def getIrisDatasetImage(request):
+  df_.plot.hist(alpha=0.4, figsize=(20, 8))
+
+  plt.legend(title = "Dataset cilumns:" ,bbox_to_anchor = (1.0, 0.6), loc = 'upper left')
+  plt.title('Iris dataset', fontsize = 20)
+  plt.xlabel('Input value', fontsize = 15)
+  
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri =  urllib.parse.quote(string)
+#'data:image/png;base64,'
+  image_data = base64.b64encode(buf.read()).decode('utf-8')
+  full_data = {'image':uri}
+  return HttpResponse(json.dumps(full_data), content_type="application/json")
+  #return  HttpResponse(buf.getvalue() ,content_type="image/jpeg" )
+  
+  #return  HttpResponse(buf.getvalue(),content_type="image/jpeg")
+
+
+  '''response = HttpResponse(content_type="image/jpeg")
+  plt.savefig(response)
+  return response '''
+
+
+def getReceptiveFields(request):
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+  
+  print("d --> ", d)
+  fig, (ax1, ax2, ax3, ax4) = plt.subplots(4)
+
+  fig.set_figheight(8)
+  fig.set_figwidth(10)
+
+  print(" ax1-> ",ax1 )
+  print(" ax2-> ",ax2 )
+  print(" ax3-> ",ax3 )
+  print(" ax4-> ",ax4 )
+
+  fig.set_figheight(8)
+  fig.set_figwidth(10)
+
+  ddlist1 = []
+  ddlist2 = []
+
+  k = 0
+
+  for ax in [ax1, ax2, ax3, ax4]:
+
+      ax.set(ylabel = f'{df_.columns[k]} \n\n Excitation of Neuron')
+
+      for i in range(len(d[0][k])):
+
+          ax.plot(d[1][k], d[0][k][i], label = i + 1)
+        
+          for x in d[1][k]:
+              ddlist1.append(x)
+
+          for y in d[0][k][i]:
+              ddlist2.append(y)
+
+          ddlist2.append(y)
+      k+=1
+
+
+  finaljson = json.dumps({'results1': ddlist1, 'results2': ddlist2})
+  
+  plt.legend(title = "Presynaptic neuron number \n      in each input column" ,bbox_to_anchor = (1.05, 3.25), loc = 'upper left')
+  plt.suptitle(' \n\n  Gaussian receptive fields for Iris dataset', fontsize = 15)
+  ax.set_xlabel(' Presynaptic neurons and\n input range of value feature', fontsize = 12, labelpad = 15)
+
+  plt.show()
+
+
+  return HttpResponse(finaljson, content_type='application/json')
 
 
 def receptiveFields(request):

@@ -39,5 +39,8 @@ urlpatterns = [
    path('lifsnn/postsynapneurons/', views.postsynaptic),
    path('lifsnn/synapticspikes/', views.synapticspikes),
 
-   path('lifsnn/dataset', views.getIrisDataset, name='dataset')
+   path('lifsnn/dataset', views.getIrisDataset, name='dataset'),
+   path('lifsnn/gaussian', views.getReceptiveFields, name='gaussian'),
+
+   path('lifsnn/irisdataimg', views.getIrisDatasetImage, name='irisdatimg'),
 ]
