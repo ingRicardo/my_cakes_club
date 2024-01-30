@@ -43,4 +43,10 @@ urlpatterns = [
    path('lifsnn/gaussian', views.getReceptiveFields, name='gaussian'),
 
    path('lifsnn/irisdataimg', views.getIrisDatasetImage, name='irisdatimg'),
+   path('lifsnn/irisgaussian', views.receptiveFieldsJson, name='irisgaussian'),
+   path('lifsnn/irislatancy', views.latancyJson, name='irislatancy'),
+   path('lifsnn/irislatancy2', views.latancyJson2, name='irislatancy2'),
+   path('lifsnn/irispresynapneurons', views.presynapneuronsJson, name='irispresynapneurons'),
+   path('lifsnn/irispostsynneu', views.postsynapticJson, name='irispostsynapneurons'),
+   path('lifsnn/irissynapticspikes', views.synapticspikesJson, name='irissynapticspikes'),
 ]

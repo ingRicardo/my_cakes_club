@@ -253,7 +253,6 @@ def LifModelFunc(self):
 
   return HttpResponse( 'LIF MODEL')
 
-
 def showDataset(request):
   df_.plot.hist(alpha=0.4, figsize=(20, 8))
 
@@ -294,19 +293,8 @@ def getIrisDatasetImage(request):
   buf.seek(0)
   string = base64.b64encode(buf.read())
   uri =  urllib.parse.quote(string)
-#'data:image/png;base64,'
-  image_data = base64.b64encode(buf.read()).decode('utf-8')
   full_data = {'image':uri}
   return HttpResponse(json.dumps(full_data), content_type="application/json")
-  #return  HttpResponse(buf.getvalue() ,content_type="image/jpeg" )
-  
-  #return  HttpResponse(buf.getvalue(),content_type="image/jpeg")
-
-
-  '''response = HttpResponse(content_type="image/jpeg")
-  plt.savefig(response)
-  return response '''
-
 
 def getReceptiveFields(request):
   sigm = [0.1, 0.1, 0.2, 0.1]
@@ -359,7 +347,6 @@ def getReceptiveFields(request):
 
 
   return HttpResponse(finaljson, content_type='application/json')
-
 
 def receptiveFields(request):
   sigm = [0.1, 0.1, 0.2, 0.1]
@@ -440,6 +427,87 @@ def receptiveFields(request):
 
   return render(request,'fields.html',{'data':uri ,'data3':uri3})
 
+def receptiveFieldsJson(request):
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  fig, (ax1, ax2, ax3, ax4) = plt.subplots(4)
+
+  fig.set_figheight(8)
+  fig.set_figwidth(10)
+
+  k = 0
+
+  for ax in [ax1, ax2, ax3, ax4]:
+
+      ax.set(ylabel = f'{df_.columns[k]} \n\n Excitation of Neuron')
+
+      for i in range(len(d[0][k])):
+
+          ax.plot(d[1][k], d[0][k][i], label = i + 1)
+
+      k+=1
+
+  plt.legend(title = "Presynaptic neuron number \n      in each input column" ,bbox_to_anchor = (1.05, 3.25), loc = 'upper left')
+  plt.suptitle(' \n\n  Gaussian receptive fields for Iris dataset', fontsize = 15)
+  ax.set_xlabel(' Presynaptic neurons and\n input range of value feature', fontsize = 12, labelpad = 15)
+
+  #plt.show()
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri =  urllib.parse.quote(string)
+  fig = plt.gcf()
+
+
+  x_input = 5
+  fig, ax = plt.subplots(1)
+
+  fig.set_figheight(5)
+  fig.set_figwidth(15)
+
+  ax.set(ylabel = df_.columns[1])
+
+  for i in range(len(d[0][1])):
+      ax.plot(d[1][1], d[0][1][i])
+
+  for n in range(x_input):
+
+      plt.plot(np.tile(df_['sepal_width'][n], (10,1)), 
+          d[0][1][np.tile(d[1][1] == df_['sepal_width'][n], (10,1))], 'ro', markersize=4)
+
+      plt.vlines(x = df_['sepal_width'][n], ymin = - 0.1, ymax = 1.1, 
+                colors = 'purple', ls = '--', lw = 1, label = df_['sepal_width'][n])
+
+      plt.text(df_['sepal_width'][n] * 0.997, 1.12, n + 1, size = 10)
+
+
+  plt.legend(title = "First five input:", bbox_to_anchor = (1.0, 0.7), loc = 'upper left')
+
+  plt.suptitle('Gaussian receptive fields for Iris dataset. \n \
+                  A detailed description of the idea using the example of the first five value "sepal_width"',
+              fontsize = 15)
+
+  ax.set_xlabel('Input value X ∈ [x_min, x_max] of column', fontsize = 12, labelpad = 15)
+  ax.set_ylabel('Excitation of a Neuron ∈ [0,1]', fontsize = 12, labelpad = 15)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri3 =  urllib.parse.quote(string)
+
+  full_data = {'image':uri, 'image2':uri3}
+  return HttpResponse(json.dumps(full_data), content_type="application/json")
+
+  #return render(request,'fields.html',{'data':uri ,'data3':uri3})
+
 def latancy(request):
   
   sigm = [0.1, 0.1, 0.2, 0.1]
@@ -487,6 +555,54 @@ def latancy(request):
 
   return render(request,'latancy.html',{'data4':uri4})
 
+def latancyJson(request):
+  
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  x_input = 5
+
+  np.set_printoptions(formatter={'float_kind':'{:f}'.format})
+  five_x = np.zeros((5, 10))
+  
+  for n in range(x_input):
+      five_x[n,:] = d[0][1][np.tile(d[1][1] == df_['sepal_width'][n], (10,1))]
+
+  five_x
+
+
+  five_x = np.where(five_x > 0.1, 1 - five_x, np.nan)
+  five_x[five_x == 0] = 0.0001
+  five_x
+
+
+  fig, ax = plt.subplots(5, figsize=(12, 10), dpi = 100)
+
+  for i in range(5):
+      ax[i].scatter(x = five_x[i], y = np.arange(1, 10 + 1), s = 10, color = 'black')
+      ax[i].hlines(xmin = 0, xmax=1, y=np.arange(1, 11, 1), 
+                colors = 'purple', ls = '--', lw = 0.25)
+      ax[i].yaxis.set_ticks(np.arange(0, 11, 1))
+      ax[i].set_ylabel(f'x{i+1} = {df_.iloc[i,1]}\n (period {i+1}) \n\n № \npre-synaptic neuron')
+      ax[i].set_xlim(0, 1)
+      ax[i].set_ylim(0, 10 * 1.05)
+
+  ax[i].set_xlabel('Spike Latancy')
+  plt.suptitle(' \n\n Input after applying latancy coding \nusing the Gaussian receptive fields method', fontsize = 15)
+  #plt.show()
+
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri4 =  urllib.parse.quote(string)
+
+  full_data = {'image':uri4}
+  return HttpResponse(json.dumps(full_data), content_type="application/json")
+  
 def latancy2(request):
   sigm = [0.1, 0.1, 0.2, 0.1]
   d = Gaus_neuron(df_, 10, 0.001, sigm)
@@ -519,6 +635,41 @@ def latancy2(request):
   string = base64.b64encode(buf.read())
   uri5 =  urllib.parse.quote(string)
   return render(request,'latancy2.html',{'data5':uri5})
+
+def latancyJson2(request):
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  fin = Lat_Spike(df_, d, 10)
+
+
+  fig, ax = plt.subplots(4, figsize=(12, 10), dpi = 100)
+
+  for i in range(4):
+
+      ax[i].scatter(x = fin[i * 10:10 * (1 + i), 0], y = np.arange(1, 10 + 1), s = 10, color = 'r')
+      ax[i].hlines(xmin = 0, xmax = 1, y=np.arange(1, 11, 1), 
+                colors = 'purple', ls = '--', lw = 0.25)
+      ax[i].yaxis.set_ticks(np.arange(0, 11, 1))
+      ax[i].set_ylabel(f'col_{i + 1}: {(df_.columns)[i]} \n x1 = {df_.iloc[0, i]} \n (period {1})\n\n № \npre-synaptic neuro')
+      ax[i].set_xlim(0, 1)
+      ax[i].set_ylim(0, 10 * 1.05)
+
+  ax[i].set_xlabel('Spike Latancy')
+  plt.suptitle(' \n\n First input in each column \n after applying latancy coding using the Gaussian receptive fields method', fontsize = 15)
+  #plt.show()
+
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri5 =  urllib.parse.quote(string)
+
+  full_data = {'image':uri5}
+  return HttpResponse(json.dumps(full_data), content_type="application/json")
 
 def presynapneurons(request):
   
@@ -557,6 +708,43 @@ def presynapneurons(request):
   uri6 =  urllib.parse.quote(string)
   return render(request,'presynapneurons.html',{'data6':uri6})
 
+def presynapneuronsJson(request):
+  
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  fin = Lat_Spike(df_, d, 10)
+
+  Final_df = pd.DataFrame(fin)
+  Final_df
+
+  fig, ax = plt.subplots(1, figsize=(15, 10), dpi = 100)
+  h = 3
+
+  for i in range(h):
+      ax.scatter(x = (i+Final_df.iloc[:,i].values)*10, y = np.arange(1, 41), s = 8, color = 'black')
+
+      plt.vlines(x = (i)*10, ymin = 0, ymax = 40, 
+                colors = 'purple', ls = '--', lw = 1)
+
+  ax.yaxis.set_ticks(np.arange(1, 41, 1))
+  ax.xaxis.set_ticks(np.arange(0, (h+1)*10, 10))
+  ax.set_xlabel('time (ms)')
+  ax.set_ylabel('№ presynaptic neuron')
+  plt.suptitle(' \n\n\n Spikes of presynaptic neurons for first 30 ms', fontsize = 15)
+  plt.gca().invert_yaxis()
+  #plt.show()
+
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri6 =  urllib.parse.quote(string)
+  full_data = {'image':uri6}
+  return HttpResponse(json.dumps(full_data), content_type="application/json")
 
 def postsynaptic(request):
   sigm = [0.1, 0.1, 0.2, 0.1]
@@ -673,6 +861,123 @@ def postsynaptic(request):
 
 
   return render(request,'postsynaptic.html',{'data7':uri7, 'data7':uri8, 'data9':uri9,'data10':uri10, 'data11':uri11, 'data12':uri12})
+
+def postsynapticJson(request):
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  fin = Lat_Spike(df_, d, 10)
+
+  Final_df = pd.DataFrame(fin)
+  Final_df
+  lat_ne = np.transpose(Final_df.values)
+  ind_type = np.array(([0, 50, 100], [50, 100, 0], [100, 0, 50]))
+  list_weight = np.zeros((3,40))
+
+  for ind in range(3):
+      
+      train_stack = model_data(ind, ind_type, lat_ne, 0, 20)
+      tr_ar = np.where(np.transpose(train_stack) > 0, 2 * (1 - np.transpose(train_stack)), 0)
+      tr_ar[:, 20:] = tr_ar[:, 20:] * (-1)
+      tr_ar = pd.DataFrame(tr_ar)
+      tr_ar[20] = tr_ar.iloc[:,:20].sum(axis = 1) + 0.1
+      tst_ar = np.float64(np.transpose(np.array(tr_ar.iloc[:,20:])))
+      
+      for i in range(1, len(tst_ar)):
+          
+          tst_ar[0][((np.round(tst_ar[0], 4) > 0.1) & (tst_ar[i] == 0))] += - np.float64(
+              np.sum(tst_ar[i][np.round(tst_ar[0], 4) > 0.1]) / len(tst_ar[0][((
+                  np.round(tst_ar[0], 4) > 0.1) & (tst_ar[i] == 0))]))
+          tst_ar[0][np.round(tst_ar[0], 4) > 0.1] += tst_ar[i][np.round(tst_ar[0], 4) > 0.1]
+          tst_ar[0][tst_ar[0] < 0.1] = 0.1
+          
+      list_weight[ind, :] = tst_ar[0]
+
+  list_weight
+
+
+  train_stack = model_data(0, ind_type, lat_ne, 0, 20)
+  res = LIF_SNN(3, 60, train_stack, list_weight, 100)
+  v = res[0]
+
+  v_plot(v)
+  
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri7 =  urllib.parse.quote(string)
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+  spike_plot(spike_time, False, False, False)
+  
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri8 =  urllib.parse.quote(string)
+
+  accuracy_snn(spike_time, 0, 20, df, ind_type, 0)[2]
+
+
+  spike_plot(spike_time, True, 46, 3)
+  
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri9 =  urllib.parse.quote(string)  
+
+  spike_plot(spike_time, True, 24, 2)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri10 =  urllib.parse.quote(string)  
+
+
+
+  train_stack = model_data(0, ind_type, lat_ne, 20, 40)
+  res = LIF_SNN(3, 60, train_stack, list_weight, 100)
+  v = res[0]
+
+  v_plot(v)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri11 =  urllib.parse.quote(string)  
+
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+  spike_plot(spike_time, False, False, False)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri12 =  urllib.parse.quote(string)  
+
+  full_data = {'image7':uri7, 'image8':uri8, 'image9':uri9,  'image10':uri10,  'image11':uri11, 'image12':uri12}
+  return HttpResponse(json.dumps(full_data), content_type="application/json")
+
+  #return render(request,'postsynaptic.html',{'data7':uri7, 'data7':uri8, 'data9':uri9,'data10':uri10, 'data11':uri11, 'data12':uri12})
 
 def synapticspikes(request):
   
@@ -834,6 +1139,165 @@ def synapticspikes(request):
 
   return render(request,'synapticspikes.html',{'data13':uri13, 'data14':uri14, 'data15':uri15, 'data16':uri16, 'data17':uri17, 'data18':uri18})
 
+
+def synapticspikesJson(request):
+  
+  sigm = [0.1, 0.1, 0.2, 0.1]
+  d = Gaus_neuron(df_, 10, 0.001, sigm)
+
+  fin = Lat_Spike(df_, d, 10)
+
+  Final_df = pd.DataFrame(fin)
+  Final_df
+
+  lat_ne = np.transpose(Final_df.values)
+  ind_type = np.array(([0, 50, 100], [50, 100, 0], [100, 0, 50]))
+
+  list_weight = np.zeros((3,40))
+
+  for ind in range(3):
+      
+      train_stack = model_data(ind, ind_type, lat_ne, 0, 20)
+      tr_ar = np.where(np.transpose(train_stack) > 0, 2 * (1 - np.transpose(train_stack)), 0)
+      tr_ar[:, 20:] = tr_ar[:, 20:] * (-1)
+      tr_ar = pd.DataFrame(tr_ar)
+      tr_ar[20] = tr_ar.iloc[:,:20].sum(axis = 1) + 0.1
+      tst_ar = np.float64(np.transpose(np.array(tr_ar.iloc[:,20:])))
+      
+      for i in range(1, len(tst_ar)):
+          
+          tst_ar[0][((np.round(tst_ar[0], 4) > 0.1) & (tst_ar[i] == 0))] += - np.float64(
+              np.sum(tst_ar[i][np.round(tst_ar[0], 4) > 0.1]) / len(tst_ar[0][((
+                  np.round(tst_ar[0], 4) > 0.1) & (tst_ar[i] == 0))]))
+          tst_ar[0][np.round(tst_ar[0], 4) > 0.1] += tst_ar[i][np.round(tst_ar[0], 4) > 0.1]
+          tst_ar[0][tst_ar[0] < 0.1] = 0.1
+          
+      list_weight[ind, :] = tst_ar[0]
+
+  list_weight
+
+
+
+
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+
+  accuracy_snn(spike_time, 20, 40, df, ind_type, 0)[2]
+
+  train_stack = model_data(0, ind_type, lat_ne, 20, 40)
+
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  t_post = res[1]
+  A_p = 0.8
+  A_m = A_p * 1.1
+
+  for n in range(3):
+      for u in range(20):
+          
+          t1 = np.round(train_stack[u + 10 * n] * 1000)
+          t2 = t1.copy()
+          
+          t2[((t1 <= t_post[n, u]) & (t1 > 0))] = A_p * np.exp((t1[((t1 <= t_post[n, u]) & (t1 > 0))] - t_post[n, u]) / 1000)
+          t2[((t1 > t_post[n, u]) & (t1 > 0))] = - A_m * np.exp((t_post[n, u] - t1[((t1 > t_post[n, u]) & (t1 > 0))]) / 1000)
+          
+          list_weight[n, :] += t2
+          
+  list_weight[list_weight < 0] = 0
+  list_weight
+
+  res = LIF_SNN(3, 60, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+  spike_plot(spike_time, False, False, False)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri13 =  urllib.parse.quote(string)  
+
+
+  accuracy_snn(spike_time, 20, 40, df, ind_type, 0)[2]
+
+
+  train_stack = model_data(0, ind_type, lat_ne, 0, 40)
+  res = LIF_SNN(3, 120, train_stack, list_weight, 100)
+  v = res[0]
+
+  v_plot(v)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri14 =  urllib.parse.quote(string)  
+
+
+  res = LIF_SNN(3, 120, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+  spike_plot(spike_time, False, False, False)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri15 =  urllib.parse.quote(string)  
+
+  accuracy_snn(spike_time, 0, 40, df, ind_type, 0)[2]
+
+
+  train_stack = model_data(0, ind_type, lat_ne, 40, 50)
+  res = LIF_SNN(3, 30, train_stack, list_weight, 100)
+  v = res[0]
+  res = LIF_SNN(3, 30, train_stack, list_weight, 0.25)
+  spike_time = res[2]
+
+  v_plot(v)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri16 =  urllib.parse.quote(string)  
+
+
+
+  spike_plot(spike_time, False, False, False)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri17 =  urllib.parse.quote(string)  
+
+
+  accuracy_snn(spike_time, 40, 50, df, ind_type, 0)[2]
+
+
+  spike_plot(spike_time, True, 27, 3)
+
+  fig = plt.gcf()
+  #convert graph into dtring buffer and then we convert 64 bit code into image
+  buf = io.BytesIO()
+  fig.savefig(buf,format='png')
+  buf.seek(0)
+  string = base64.b64encode(buf.read())
+  uri18 =  urllib.parse.quote(string)  
+
+
+  full_data = {'image13':uri13, 'image14':uri14, 'image15':uri15,  'image16':uri16,  'image17':uri17, 'image18':uri18}
+  return HttpResponse(json.dumps(full_data), content_type="application/json")
 
 def callNeuralNets(request):
   ''' mymember = "this is the context"
